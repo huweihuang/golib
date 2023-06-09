@@ -42,10 +42,10 @@ func GetExample(email, role string) (data map[string]string, err error) {
 	path := fmt.Sprintf("/api/v1/token?email=%s&role=%s", email, role)
 	statusCode, body, err := httplib.CallURL("GET", endpoint, path, nil, nil, &response)
 	if err != nil {
-		return "", fmt.Errorf("failed to get token by edge api, statusCode :%d, err: %v", statusCode, err)
+		return nil, fmt.Errorf("failed to get token by edge api, statusCode :%d, err: %v", statusCode, err)
 	}
 	if statusCode != http.StatusOK {
-		return "", fmt.Errorf("get token request error, %s", body)
+		return nil, fmt.Errorf("get token request error, %s", body)
 	}
 
 	data = (&response).Data

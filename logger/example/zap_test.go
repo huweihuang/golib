@@ -4,10 +4,10 @@ import (
 	"errors"
 	"testing"
 
-	logger "github.com/huweihuang/logger/zap"
+	logger "github.com/huweihuang/golib/logger/zap"
 )
 
-func TestZap(t *testing.T){
+func TestZap(t *testing.T) {
 	c := logger.New()
 	c.SetDivision("size")     // 设置归档方式，"time"时间归档 "size" 文件大小归档，文件大小等可以在配置文件配置
 	c.SetTimeUnit(logger.Day) // 时间归档 可以设置切割单位
@@ -31,7 +31,7 @@ func TestZap(t *testing.T){
 	logger.Info("this is a log", logger.WithError(errors.New("this is a new error")))
 }
 
-func TestZapLogByToml(t *testing.T){
+func TestZapLogByToml(t *testing.T) {
 	c := logger.NewFromToml("../zap/config/config.toml")
 	c.InitLogger()
 

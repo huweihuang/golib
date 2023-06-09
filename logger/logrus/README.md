@@ -16,7 +16,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	logger "github.com/huweihuang/logger/logrus"
+	logger "github.com/huweihuang/golib/logger/logrus"
 )
 
 func TestLogrus(t *testing.T) {

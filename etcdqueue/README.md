@@ -16,7 +16,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/huweihuang/etcdqueue"
+	"github.com/huweihuang/golib/etcdqueue"
 )
 
 func main() {

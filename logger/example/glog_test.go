@@ -3,10 +3,10 @@ package example
 import (
 	"testing"
 
-	"github.com/huweihuang/logger/glog"
+	"github.com/huweihuang/golib/logger/glog"
 )
 
-func TestGlog(t *testing.T){
+func TestGlog(t *testing.T) {
 	glog.Debugf("test debug")
 	glog.Errorf("test error")
 	glog.Infof("test info")

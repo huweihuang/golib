@@ -16,7 +16,7 @@ import (
 	"errors"
 	"testing"
 
-	logger "github.com/huweihuang/logger/zap"
+	logger "github.com/huweihuang/golib/logger/zap"
 )
 
 func TestZap(t *testing.T){

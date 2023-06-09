@@ -14,9 +14,10 @@ func CallURL(method, url, path string, header map[string]string, request interfa
 	statusCode int, body []byte, err error) {
 
 	log.WithFields(log.Fields{
+		"method":  method,
 		"url":     url,
 		"path":    path,
-		"method":  method,
+		"header":  header,
 		"request": request,
 	}).Info("request url info")
 
