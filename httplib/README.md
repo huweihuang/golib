@@ -29,7 +29,7 @@ import(
 )
 
 const(
-    endpoint = "example.com"
+    endpoint = "http://api.example.com"
 )
 
 func GetExample(email, role string) (data map[string]string, err error) {
