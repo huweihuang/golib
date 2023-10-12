@@ -65,3 +65,16 @@ func ValidateBadRequestWrapper(c *gin.Context, errs field.ErrorList) {
 	log.Logger.WithField("resp", resp).Error("invalid request")
 	c.JSON(http.StatusBadRequest, resp)
 }
+
+func ParseRequest(c *gin.Context, request interface{}) {
+	if err := c.BindJSON(request); err != nil {
+		resp := types.Response{
+			Code:    http.StatusBadRequest,
+			Message: "invalid request body",
+			Data:    map[string]interface{}{"error": err},
+		}
+		log.Logger.WithField("err", err).Warn("invalid request body")
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+}
