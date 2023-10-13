@@ -1,12 +1,1 @@
-time="2023-06-09T14:21:16+08:00" level=debug msg="test debugf, debugf"
-time="2023-06-09T14:21:16+08:00" level=info msg="test infof, infof"
-time="2023-06-09T14:21:16+08:00" level=warning msg="test warnf, warnf"
-time="2023-06-09T14:21:16+08:00" level=error msg="test errorf, errorf"
-time="2023-06-09T14:21:16+08:00" level=debug msg="test field, debug" field1=debug
-time="2023-06-09T14:21:16+08:00" level=info msg="test field, info" field1=info
-time="2023-06-09T14:21:16+08:00" level=warning msg="test field, warn" field1=warn
-time="2023-06-09T14:21:16+08:00" level=error msg="test field, error" field1=error
-time="2023-06-09T14:21:16+08:00" level=debug msg="test fields, debug" fields1=fields1_value fields2=fields2_value
-time="2023-06-09T14:21:16+08:00" level=info msg="test fields, info" fields1=fields1_value fields2=fields2_value
-time="2023-06-09T14:21:16+08:00" level=warning msg="test fields, warn" fields1=fields1_value fields2=fields2_value
-time="2023-06-09T14:21:16+08:00" level=error msg="test fields, error" fields1=fields1_value fields2=fields2_value
+logrus.log.20231013
