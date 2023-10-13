@@ -10,7 +10,7 @@ import (
 
 func TestLogrus(t *testing.T) {
 	// init logger
-	logger.InitLogger("./logs/logrus.log", "debug", "text", false, false)
+	logger.InitLogger("./logs/logrus.log", "debug", "text", false)
 
 	// Printf
 	logger.Logger.Debugf("test debugf, %s", "debugf")
