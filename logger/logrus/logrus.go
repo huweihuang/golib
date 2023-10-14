@@ -18,7 +18,9 @@ var (
 )
 
 const (
-	defaultLevel = "info"
+	defaultLevel   = "info"
+	defaultLogFile = "log/info.log"
+	defaultFormat  = "text"
 )
 
 func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logrus.Logger {
@@ -95,4 +97,8 @@ func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logru
 
 	Logger = logger
 	return logger
+}
+
+func InitDefaultLogger() *logrus.Logger {
+	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, true)
 }

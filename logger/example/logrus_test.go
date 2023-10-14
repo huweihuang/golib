@@ -45,3 +45,8 @@ func TestLogrus(t *testing.T) {
 		"fields2": "fields2_value",
 	}).Error("test fields, error")
 }
+
+func TestDefaultLogrus(t *testing.T) {
+	logger.InitDefaultLogger()
+	logger.Logger.WithField("test", "testkey").Info("test default logger")
+}
