@@ -1,39 +1,40 @@
 package zap
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"time"
 
-	"github.com/BurntSushi/toml"
+	"github.com/huweihuang/golib/utils"
+
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"gopkg.in/yaml.v2"
 )
 
 const (
 	TimeDivision = "time"
 	SizeDivision = "size"
 
-	_defaultEncoding = "console"
-	_defaultDivision = "size"
-	_defaultUnit     = Day
-	_defaultLogLevel = "info"
+	defaultEncoding      = "console"
+	defaultDivision      = "size"
+	defaultUnit          = Day
+	defaultLogLevel      = "info"
+	defaultInfoFilename  = "log/info.log"
+	defaultErrorFilename = "log/error.log"
 
 	// lumberjack
-	_defaultMaxSize    = 256 //MB
-	_defaultMaxBackups = 30
-	_defaultMaxAge     = 30
+	defaultMaxSize    = 256 //MB
+	defaultMaxBackups = 30
+	defaultMaxAge     = 30
 )
 
 var (
-	SugaredLogger             *zap.SugaredLogger
-	Logger                    *Log
+	SugaredLogger *zap.SugaredLogger
+	Logger        *zap.Logger
+
 	_encoderNameToConstructor = map[string]func(zapcore.EncoderConfig) zapcore.Encoder{
 		"console": func(encoderConfig zapcore.EncoderConfig) zapcore.Encoder {
 			return zapcore.NewConsoleEncoder(encoderConfig)
@@ -43,10 +44,6 @@ var (
 		},
 	}
 )
-
-type Log struct {
-	L *zap.Logger
-}
 
 type LogOptions struct {
 	// Encoding sets the logger's encoding. Valid values are "json" and
@@ -68,114 +65,42 @@ type LogOptions struct {
 	caller         bool
 }
 
-func infoLevel() zap.LevelEnablerFunc {
-	return zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.WarnLevel
-	})
-}
-
-func warnLevel() zap.LevelEnablerFunc {
-	return zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.WarnLevel
-	})
-}
-
 func New() *LogOptions {
 	return &LogOptions{
-		Encoding:       _defaultEncoding,
-		Division:       _defaultDivision,
+		Encoding:       defaultEncoding,
+		InfoFilename:   defaultInfoFilename,
+		ErrorFilename:  defaultErrorFilename,
+		Division:       defaultDivision,
 		LevelSeparate:  false,
-		LogLevel:       _defaultLogLevel,
-		TimeUnit:       _defaultUnit,
-		MaxSize:        _defaultMaxSize, //MB
-		MaxBackups:     _defaultMaxBackups,
-		MaxAge:         _defaultMaxAge, //days
+		LogLevel:       defaultLogLevel,
+		TimeUnit:       defaultUnit,
+		MaxSize:        defaultMaxSize, //MB
+		MaxBackups:     defaultMaxBackups,
+		MaxAge:         defaultMaxAge, //days
 		Compress:       true,
 		caller:         true,
 		consoleDisplay: true,
 	}
 }
 
-func NewFromToml(confPath string) *LogOptions {
-	var c *LogOptions
-	if _, err := toml.DecodeFile(confPath, &c); err != nil {
-		panic(err)
-	}
-	c.defaultDisplay()
-	return c
+// Log get a default SugaredLogger
+func Log() *zap.SugaredLogger {
+	log := New()
+	log.InitLogger()
+	return SugaredLogger
 }
 
-func NewFromYaml(confPath string) *LogOptions {
-	var c *LogOptions
-	file, err := ioutil.ReadFile(confPath)
-	if err != nil {
-		fmt.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = yaml.Unmarshal(file, &c)
-	if err != nil {
-		fmt.Printf("error: %v", err)
-	}
-	c.defaultDisplay()
-	return c
+// NewLog new a SugaredLogger by logFile, logLevel, format
+func NewLog(logFile, logLevel, format string) *zap.SugaredLogger {
+	log := New()
+	log.SetInfoFile(logFile)
+	log.SetLogLevel(logLevel)
+	log.SetEncoding(format)
+	log.InitLogger()
+	return SugaredLogger
 }
 
-func NewFromJson(confPath string) *LogOptions {
-	var c *LogOptions
-	file, err := ioutil.ReadFile(confPath)
-	if err != nil {
-		fmt.Printf("yamlFile.Get err   #%v ", err)
-	}
-	err = json.Unmarshal(file, &c)
-	if err != nil {
-		fmt.Printf("error: %v", err)
-	}
-	c.defaultDisplay()
-	return c
-}
-
-func (c *LogOptions) SetDivision(division string) {
-	c.Division = division
-}
-
-func (c *LogOptions) CloseConsoleDisplay() {
-	c.consoleDisplay = false
-}
-
-func (c *LogOptions) defaultDisplay() {
-	c.consoleDisplay = true
-}
-
-func (c *LogOptions) SetCaller(b bool) {
-	c.caller = b
-}
-
-func (c *LogOptions) SetTimeUnit(t TimeUnit) {
-	c.TimeUnit = t
-}
-
-func (c *LogOptions) SetErrorFile(path string) {
-	c.LevelSeparate = true
-	c.ErrorFilename = path
-}
-
-func (c *LogOptions) SetInfoFile(path string) {
-	c.InfoFilename = path
-}
-
-func (c *LogOptions) SetEncoding(encoding string) {
-	c.Encoding = encoding
-}
-
-func (c *LogOptions) SetLogLevel(level string) {
-	c.LogLevel = level
-}
-
-// isOutput whether set output file
-func (c *LogOptions) isOutput() bool {
-	return c.InfoFilename != ""
-}
-
-func (c *LogOptions) InitLogger() (*Log, *zap.SugaredLogger) {
+func (c *LogOptions) InitLogger() (*zap.Logger, *zap.SugaredLogger) {
 	var (
 		core               zapcore.Core
 		infoHook, warnHook io.Writer
@@ -184,7 +109,7 @@ func (c *LogOptions) InitLogger() (*Log, *zap.SugaredLogger) {
 	)
 
 	if c.Encoding == "" {
-		c.Encoding = _defaultEncoding
+		c.Encoding = defaultEncoding
 	}
 	encoder := _encoderNameToConstructor[c.Encoding]
 
@@ -250,12 +175,59 @@ func (c *LogOptions) InitLogger() (*Log, *zap.SugaredLogger) {
 		logger = zap.New(core, development)
 	}
 
-	Logger = &Log{logger}
-	SugaredLogger = Logger.L.Sugar()
+	Logger = logger
+	SugaredLogger = Logger.Sugar()
 	return Logger, SugaredLogger
 }
 
+func (c *LogOptions) SetDivision(division string) {
+	c.Division = division
+}
+
+func (c *LogOptions) CloseConsoleDisplay() {
+	c.consoleDisplay = false
+}
+
+func (c *LogOptions) defaultDisplay() {
+	c.consoleDisplay = true
+}
+
+func (c *LogOptions) SetCaller(b bool) {
+	c.caller = b
+}
+
+func (c *LogOptions) SetTimeUnit(t TimeUnit) {
+	c.TimeUnit = t
+}
+
+func (c *LogOptions) SetErrorFile(path string) {
+	c.LevelSeparate = true
+	c.ErrorFilename = path
+}
+
+func (c *LogOptions) SetInfoFile(path string) {
+	c.InfoFilename = path
+}
+
+func (c *LogOptions) SetEncoding(encoding string) {
+	c.Encoding = encoding
+}
+
+func (c *LogOptions) SetLogLevel(level string) {
+	c.LogLevel = level
+}
+
+// isOutput whether set output file
+func (c *LogOptions) isOutput() bool {
+	return c.InfoFilename != ""
+}
+
 func (c *LogOptions) sizeDivisionWriter(filename string) io.Writer {
+	err := utils.MakeParentDir(filename)
+	if err != nil {
+		panic("Failed to create log directory")
+	}
+
 	hook := &lumberjack.Logger{
 		Filename:   filename,
 		MaxSize:    c.MaxSize,
@@ -268,6 +240,11 @@ func (c *LogOptions) sizeDivisionWriter(filename string) io.Writer {
 }
 
 func (c *LogOptions) timeDivisionWriter(filename string) io.Writer {
+	err := utils.MakeParentDir(filename)
+	if err != nil {
+		panic("Failed to create log directory")
+	}
+
 	hook, err := rotatelogs.New(
 		filename+c.TimeUnit.Format(),
 		rotatelogs.WithLinkName(filename),
@@ -282,48 +259,48 @@ func (c *LogOptions) timeDivisionWriter(filename string) io.Writer {
 }
 
 func Info(msg string, args ...zap.Field) {
-	Logger.L.Info(msg, args...)
+	Logger.Info(msg, args...)
 }
 
 func Error(msg string, args ...zap.Field) {
-	Logger.L.Error(msg, args...)
+	Logger.Error(msg, args...)
 }
 
 func Warn(msg string, args ...zap.Field) {
-	Logger.L.Warn(msg, args...)
+	Logger.Warn(msg, args...)
 }
 
 func Debug(msg string, args ...zap.Field) {
-	Logger.L.Debug(msg, args...)
+	Logger.Debug(msg, args...)
 }
 
 func Fatal(msg string, args ...zap.Field) {
-	Logger.L.Fatal(msg, args...)
+	Logger.Fatal(msg, args...)
 }
 
 func Infof(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Logger.L.Info(logMsg)
+	Logger.Info(logMsg)
 }
 
 func Errorf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Logger.L.Error(logMsg)
+	Logger.Error(logMsg)
 }
 
 func Warnf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Logger.L.Warn(logMsg)
+	Logger.Warn(logMsg)
 }
 
 func Debugf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Logger.L.Debug(logMsg)
+	Logger.Debug(logMsg)
 }
 
 func Fatalf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Logger.L.Fatal(logMsg)
+	Logger.Fatal(logMsg)
 }
 
 func With(k string, v interface{}) zap.Field {
@@ -332,6 +309,18 @@ func With(k string, v interface{}) zap.Field {
 
 func WithError(err error) zap.Field {
 	return zap.NamedError("error", err)
+}
+
+func infoLevel() zap.LevelEnablerFunc {
+	return zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < zapcore.WarnLevel
+	})
+}
+
+func warnLevel() zap.LevelEnablerFunc {
+	return zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.WarnLevel
+	})
 }
 
 func convertLogLevel(logLevel string) (level zapcore.Level) {

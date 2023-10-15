@@ -1,43 +1,3 @@
-# Introduction
-
-官网：[zap log](https://github.com/uber-go/zap)  
-
-Blazing fast, structured, leveled logging in Go.
-
-# Features
-
-- 高性能
-
-# Usage
-
-- SugaredLogger: 
-  - 提供结构化和`printf`的日志输出格式，比其他结构化日志包快4-5倍。
-  - 适用于性能不严苛的上下文场景中。
-
-```go
-log.SugaredLogger.Infow("failed to fetch URL",
-	// Structured context as loosely typed key-value pairs.
-	"url", "example.com",
-	"attempt", 3,
-	"backoff", time.Second)
-```
-
-- Logger：
-  - 提供更高性能，比SugaredLogger性能更快，适用于性能要求严苛的上下文场景。
-  - 只提供结构化的格式，需要显示声明结构化`zap.String`且没有`printf`的格式。
-
-```go
-log.Logger.Info("failed to fetch URL",
-	// Structured context as strongly typed Field values.
-	zap.String("url", "example.com"),
-	zap.Int("attempt", 3),
-	zap.Duration("backoff", time.Second),
-)
-```
-
-# Example
-
-```go
 package zap
 
 import (
@@ -59,6 +19,7 @@ func TestZap(t *testing.T) {
 	c.SetErrorFile("./log/zap.error.log") // 设置error日志文件
 	c.SetLogLevel("debug")
 	c.InitLogger()
+
 	PrintLog()
 }
 
@@ -67,6 +28,22 @@ func TestZapLogByConfig(t *testing.T) {
 	c.InitLogger()
 
 	PrintLog()
+}
+
+func TestLog(t *testing.T) {
+	log.Log().Infof("test default log")
+	log.Log().Infow("failed to fetch URL",
+		// Structured context as loosely typed key-value pairs.
+		"url", "example.com",
+		"attempt", 3,
+		"backoff", time.Second)
+
+	log.Log().Error("test error log")
+	log.Log().Errorw("failed to fetch URL",
+		// Structured context as loosely typed key-value pairs.
+		"url", "example.com",
+		"attempt", 3,
+		"backoff", time.Second)
 }
 
 func PrintLog() {
@@ -97,4 +74,3 @@ func PrintLog() {
 	log.Info("this is a log", log.With("Trace", "12345677"))
 	log.Info("this is a log", log.WithError(errors.New("this is a new error")))
 }
-```

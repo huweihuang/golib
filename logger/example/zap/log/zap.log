@@ -1,0 +1,16 @@
+{"level":"info","time":"2023-10-15T12:44:10.118+0800","caller":"zap/zap_test.go:34","msg":"info level test"}
+{"level":"debug","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap_test.go:37","msg":"debug level test"}
+{"level":"info","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap_test.go:39","msg":"info level test: 111"}
+{"level":"debug","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap_test.go:42","msg":"debug level test: 111"}
+{"level":"info","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap_test.go:44","msg":"failed to fetch URL","url":"example.com","attempt":3,"backoff":1}
+{"level":"info","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap_test.go:51","msg":"failed to fetch URL","url":"example.com","attempt":3,"backoff":1}
+{"level":"info","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap.go:229","msg":"this is a log","Trace":"12345677"}
+{"level":"info","time":"2023-10-15T12:44:10.119+0800","caller":"zap/zap.go:229","msg":"this is a log","error":"this is a new error"}
+{"level":"info","time":"2023-10-15T12:52:02.967+0800","caller":"zap/zap_test.go:44","msg":"info level test"}
+{"level":"debug","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap_test.go:47","msg":"debug level test"}
+{"level":"info","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap_test.go:49","msg":"info level test: 111"}
+{"level":"debug","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap_test.go:52","msg":"debug level test: 111"}
+{"level":"info","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap_test.go:54","msg":"failed to fetch URL","url":"example.com","attempt":3,"backoff":1}
+{"level":"info","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap_test.go:61","msg":"failed to fetch URL","url":"example.com","attempt":3,"backoff":1}
+{"level":"info","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap.go:235","msg":"this is a log","Trace":"12345677"}
+{"level":"info","time":"2023-10-15T12:52:02.968+0800","caller":"zap/zap.go:235","msg":"this is a log","error":"this is a new error"}

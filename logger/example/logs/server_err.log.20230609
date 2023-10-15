@@ -1,4 +1,0 @@
-{"level":"error","time":"2023-06-09T14:20:32.133+0800","msg":"error level test"}
-{"level":"warn","time":"2023-06-09T14:20:32.133+0800","msg":"warn level test"}
-{"level":"error","time":"2023-06-09T14:20:32.133+0800","msg":"error level test: 111"}
-{"level":"warn","time":"2023-06-09T14:20:32.133+0800","msg":"warn level test: 111"}

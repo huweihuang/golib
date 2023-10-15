@@ -1,7 +1,7 @@
 #log config here
 encoding="json"
-info_filename="./logs/server.log"
-error_filename="./logs/server_err.log"
+info_filename="./log/server.log"
+error_filename="./log/server_err.log"
 max_size=1024
 max_backups=30
 max_age=7
