@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/huweihuang/golib/utils"
+
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 )
@@ -18,9 +20,10 @@ var (
 )
 
 const (
-	defaultLevel   = "info"
-	defaultLogFile = "log/info.log"
-	defaultFormat  = "text"
+	defaultLevel             = "info"
+	defaultLogFile           = "log/info.log"
+	defaultFormat            = "text"
+	defaultEnableForceColors = true
 )
 
 func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logrus.Logger {
@@ -40,21 +43,7 @@ func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logru
 	logger.SetOutput(os.Stdout)
 	// set logfile if not empty
 	if logFile != "" {
-		lastIdx := strings.LastIndexAny(logFile, "/")
-		err := os.MkdirAll(logFile[:lastIdx], 644)
-		if err != nil {
-			panic("Failed to create log directory")
-		}
-		// accessLog, err := os.OpenFile(logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		accessLog, err := rotatelogs.New(
-			logFile+".%Y%m%d",
-			rotatelogs.WithLinkName(logFile),
-			rotatelogs.WithMaxAge(time.Duration(7*24)*time.Hour),
-			rotatelogs.WithRotationTime(time.Duration(24)*time.Hour),
-		)
-		if err != nil {
-			panic("Failed to create access.log")
-		}
+		accessLog := timeDivisionWriter(logFile)
 		writers := []io.Writer{
 			accessLog,
 			os.Stdout,
@@ -99,6 +88,29 @@ func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logru
 	return logger
 }
 
+func timeDivisionWriter(logFile string) io.Writer {
+	err := utils.MakeParentDir(logFile)
+	if err != nil {
+		panic("Failed to create log directory")
+	}
+
+	accessLog, err := rotatelogs.New(
+		logFile+".%Y%m%d",
+		rotatelogs.WithLinkName(logFile),
+		rotatelogs.WithMaxAge(time.Duration(7*24)*time.Hour),
+		rotatelogs.WithRotationTime(time.Duration(24)*time.Hour),
+	)
+	if err != nil {
+		panic("Failed to create access.log")
+	}
+
+	return accessLog
+}
+
 func InitDefaultLogger() *logrus.Logger {
-	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, true)
+	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, defaultEnableForceColors)
+}
+
+func Log() *logrus.Logger {
+	return InitDefaultLogger()
 }

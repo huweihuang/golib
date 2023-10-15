@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"os"
+	"path/filepath"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -33,4 +35,13 @@ func IsInList(str string, list []string) bool {
 		return true
 	}
 	return false
+}
+
+func MakeParentDir(fullFilePath string) error {
+	dirPath := filepath.Dir(fullFilePath)
+	err := os.MkdirAll(dirPath, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return nil
 }

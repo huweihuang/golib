@@ -1,0 +1,4 @@
+2023-10-15T14:25:35.729+0800	info	zap/zap_test.go:34	test default log
+2023-10-15T14:25:35.730+0800	info	zap/zap_test.go:35	failed to fetch URL	{"url": "example.com", "attempt": 3, "backoff": 1}
+2023-10-15T14:25:35.730+0800	error	zap/zap_test.go:41	test error log
+2023-10-15T14:25:35.730+0800	error	zap/zap_test.go:42	failed to fetch URL	{"url": "example.com", "attempt": 3, "backoff": 1}
