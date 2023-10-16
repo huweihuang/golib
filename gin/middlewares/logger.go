@@ -3,9 +3,15 @@ package middlerwares
 import (
 	"time"
 
+	log "github.com/huweihuang/golib/logger/logrus"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
+
+func Logger() gin.HandlerFunc {
+	return LogMiddleware(log.Log())
+}
 
 func LogMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -43,7 +49,7 @@ func LogMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 	}
 }
 
-// Convert to milliseconds
+// formatLatency convert to milliseconds
 func formatLatency(latency time.Duration) int {
 	return int(latency.Seconds() * 1000)
 }

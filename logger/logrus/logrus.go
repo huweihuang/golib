@@ -15,15 +15,22 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var (
-	Logger *logrus.Logger
-)
-
 const (
 	defaultLevel             = "info"
 	defaultLogFile           = "log/info.log"
 	defaultFormat            = "text"
 	defaultEnableForceColors = true
+)
+
+var (
+	Logger *logrus.Logger
+
+	callerPrettyfier = func(f *runtime.Frame) (string, string) {
+		s := strings.Split(f.Function, ".")
+		funcName := s[len(s)-1]
+		fileName := path.Base(f.File)
+		return funcName, fmt.Sprintf("%s:%d", fileName, f.Line)
+	}
 )
 
 func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logrus.Logger {
@@ -61,26 +68,16 @@ func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logru
 	switch format {
 	case "json":
 		logger.SetFormatter(&logrus.JSONFormatter{
-			TimestampFormat: "2006-01-02 15:04:05",
-			CallerPrettyfier: func(f *runtime.Frame) (string, string) {
-				s := strings.Split(f.Function, ".")
-				funcName := s[len(s)-1]
-				fileName := path.Base(f.File)
-				return funcName, fmt.Sprintf("%s:%d", fileName, f.Line)
-			},
+			TimestampFormat:  "2006-01-02 15:04:05",
+			CallerPrettyfier: callerPrettyfier,
 		})
 	default:
 		logger.SetFormatter(&logrus.TextFormatter{
-			FullTimestamp:   true,
-			ForceColors:     forceColors,
-			DisableQuote:    true,
-			TimestampFormat: "2006-01-02 15:04:05",
-			CallerPrettyfier: func(f *runtime.Frame) (string, string) {
-				s := strings.Split(f.Function, ".")
-				funcName := s[len(s)-1]
-				fileName := path.Base(f.File)
-				return funcName, fmt.Sprintf("%s:%d", fileName, f.Line)
-			},
+			FullTimestamp:    true,
+			ForceColors:      forceColors,
+			DisableQuote:     true,
+			TimestampFormat:  "2006-01-02 15:04:05",
+			CallerPrettyfier: callerPrettyfier,
 		})
 	}
 
@@ -111,6 +108,7 @@ func InitDefaultLogger() *logrus.Logger {
 	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, defaultEnableForceColors)
 }
 
+// Log get a default Logger
 func Log() *logrus.Logger {
 	return InitDefaultLogger()
 }

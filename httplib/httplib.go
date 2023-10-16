@@ -14,7 +14,7 @@ import (
 func CallURL(method, url, path string, header map[string]string, request interface{}, response interface{}) (
 	statusCode int, body []byte, err error) {
 
-	log.Logger.WithFields(logrus.Fields{
+	log.Log().WithFields(logrus.Fields{
 		"method":  method,
 		"url":     url,
 		"path":    path,

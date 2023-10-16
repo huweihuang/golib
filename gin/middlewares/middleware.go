@@ -18,7 +18,7 @@ func SucceedWrapper(c *gin.Context, msg string, data interface{}) {
 		Message: fmt.Sprintf("%s succeed", msg),
 		Data:    data,
 	}
-	log.Logger.WithField("resp", resp).Info(msg)
+	log.Log().WithField("resp", resp).Info(msg)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -29,7 +29,7 @@ func ErrorWrapper(c *gin.Context, msg string, err error) {
 		Message: fmt.Sprintf("%s failed", msg),
 		Data:    map[string]interface{}{"error": err.Error()},
 	}
-	log.Logger.WithField("resp", resp).Error(msg)
+	log.Log().WithField("resp", resp).Error(msg)
 	c.JSON(http.StatusInternalServerError, resp)
 }
 
@@ -40,7 +40,7 @@ func NotFoundWrapper(c *gin.Context, msg string, data interface{}) {
 		Message: fmt.Sprintf("%s not found", msg),
 		Data:    data,
 	}
-	log.Logger.WithField("resp", resp).Error(msg)
+	log.Log().WithField("resp", resp).Error(msg)
 	c.JSON(http.StatusNotFound, resp)
 }
 
@@ -51,7 +51,7 @@ func BadRequestWrapper(c *gin.Context, err error) {
 		Message: "invalid request",
 		Data:    map[string]interface{}{"error": err.Error()},
 	}
-	log.Logger.WithField("resp", resp).Error("invalid request")
+	log.Log().WithField("resp", resp).Error("invalid request")
 	c.JSON(http.StatusBadRequest, resp)
 }
 
@@ -62,7 +62,7 @@ func ValidateBadRequestWrapper(c *gin.Context, errs field.ErrorList) {
 		Message: "invalid request",
 		Data:    map[string]interface{}{"error": errs},
 	}
-	log.Logger.WithField("resp", resp).Error("invalid request")
+	log.Log().WithField("resp", resp).Error("invalid request")
 	c.JSON(http.StatusBadRequest, resp)
 }
 
@@ -73,7 +73,7 @@ func ParseRequest(c *gin.Context, request interface{}) {
 			Message: "invalid request body",
 			Data:    map[string]interface{}{"error": err},
 		}
-		log.Logger.WithField("err", err).Warn("invalid request body")
+		log.Log().WithField("err", err).Warn("invalid request body")
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
