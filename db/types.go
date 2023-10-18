@@ -30,14 +30,24 @@ func Value(data interface{}) (interface{}, error) {
 	return json.Marshal(data)
 }
 
-type GormMap map[string]string
+type StringMap map[string]string
 
 // Scan 实现 sql.Scanner 接口，Scan 将字符串变成结构体
-func (obj *GormMap) Scan(value interface{}) error {
+func (obj *StringMap) Scan(value interface{}) error {
 	return Scan(&obj, value)
 }
 
 // Value 实现 driver.Valuer 接口，Value 将结构体变成字符串
-func (obj GormMap) Value() (driver.Value, error) {
+func (obj StringMap) Value() (driver.Value, error) {
+	return Value(obj)
+}
+
+type StringArray []string
+
+func (obj *StringArray) Scan(value interface{}) error {
+	return Scan(&obj, value)
+}
+
+func (obj StringArray) Value() (driver.Value, error) {
 	return Value(obj)
 }
