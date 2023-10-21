@@ -42,6 +42,10 @@ func (obj StringMap) Value() (driver.Value, error) {
 	return Value(obj)
 }
 
+func (obj StringMap) GormDataType() string {
+	return "json"
+}
+
 type StringArray []string
 
 func (obj *StringArray) Scan(value interface{}) error {
@@ -50,4 +54,8 @@ func (obj *StringArray) Scan(value interface{}) error {
 
 func (obj StringArray) Value() (driver.Value, error) {
 	return Value(obj)
+}
+
+func (obj StringArray) GormDataType() string {
+	return "json"
 }
