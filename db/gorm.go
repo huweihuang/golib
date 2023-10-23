@@ -11,6 +11,14 @@ import (
 
 var DB *gorm.DB
 
+type DBConfig struct {
+	Addr     string
+	DBName   string
+	User     string
+	Password string
+	LogLevel string
+}
+
 func SetupDB(addr, dbName, user, passwd, logLevel string) (*gorm.DB, error) {
 	dsn := FormatDSN(addr, dbName, user, passwd)
 	level := formatLogLevel(logLevel)
