@@ -20,7 +20,7 @@ func CallURL(method, url, path string, header map[string]string, request interfa
 		"path":    path,
 		"header":  header,
 		"request": request,
-	}).Info("request url info")
+	}).Debug("request url info")
 
 	params, err := encodeData(request)
 	if err != nil {

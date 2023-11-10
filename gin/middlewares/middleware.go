@@ -30,7 +30,7 @@ func ErrorWrapper(c *gin.Context, msg string, err error) {
 		Data:    map[string]interface{}{"error": err.Error()},
 	}
 	log.Log().WithField("resp", resp).Error(msg)
-	c.JSON(http.StatusInternalServerError, resp)
+	c.AbortWithStatusJSON(http.StatusInternalServerError, resp)
 }
 
 // NotFoundWrapper 封装NotFound的处理逻辑，状态码 404
@@ -41,7 +41,7 @@ func NotFoundWrapper(c *gin.Context, msg string, data interface{}) {
 		Data:    data,
 	}
 	log.Log().WithField("resp", resp).Error(msg)
-	c.JSON(http.StatusNotFound, resp)
+	c.AbortWithStatusJSON(http.StatusNotFound, resp)
 }
 
 // BadRequestWrapper 封装非法请求的处理逻辑，状态码 400
@@ -52,7 +52,7 @@ func BadRequestWrapper(c *gin.Context, err error) {
 		Data:    map[string]interface{}{"error": err.Error()},
 	}
 	log.Log().WithField("resp", resp).Error("invalid request")
-	c.JSON(http.StatusBadRequest, resp)
+	c.AbortWithStatusJSON(http.StatusBadRequest, resp)
 }
 
 // ValidateBadRequestWrapper 封装多项校验非法请求的处理逻辑，状态码 400
@@ -63,7 +63,7 @@ func ValidateBadRequestWrapper(c *gin.Context, errs field.ErrorList) {
 		Data:    map[string]interface{}{"error": errs},
 	}
 	log.Log().WithField("resp", resp).Error("invalid request")
-	c.JSON(http.StatusBadRequest, resp)
+	c.AbortWithStatusJSON(http.StatusBadRequest, resp)
 }
 
 func ParseRequest(c *gin.Context, request interface{}) {
@@ -74,7 +74,6 @@ func ParseRequest(c *gin.Context, request interface{}) {
 			Data:    map[string]interface{}{"error": err},
 		}
 		log.Log().WithField("err", err).Warn("invalid request body")
-		c.JSON(http.StatusBadRequest, resp)
-		return
+		c.AbortWithStatusJSON(http.StatusBadRequest, resp)
 	}
 }
