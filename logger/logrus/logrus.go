@@ -18,7 +18,7 @@ import (
 const (
 	defaultLevel             = "info"
 	defaultLogFile           = "log/info.log"
-	defaultFormat            = "text"
+	defaultFormat            = "json"
 	defaultEnableForceColors = true
 )
 
