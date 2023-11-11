@@ -1,7 +1,6 @@
 package zap
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/huweihuang/golib/utils"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"go.uber.org/atomic"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -17,13 +17,18 @@ import (
 const (
 	TimeDivision = "time"
 	SizeDivision = "size"
+	TextFormat   = "text"
+	JsonFormat   = "json"
+)
 
-	defaultEncoding      = "console"
-	defaultDivision      = "size"
-	defaultUnit          = Day
-	defaultLogLevel      = "info"
+const (
 	defaultInfoFilename  = "log/info.log"
 	defaultErrorFilename = "log/error.log"
+	defaultLogLevel      = "info"
+	defaultEncoding      = "json"
+
+	defaultDivision = SizeDivision
+	defaultUnit     = Day
 
 	// lumberjack
 	defaultMaxSize    = 256 //MB
@@ -32,14 +37,16 @@ const (
 )
 
 var (
+	logFilled atomic.Bool
+
 	SugaredLogger *zap.SugaredLogger
-	Logger        *zap.Logger
+	Log           *zap.Logger
 
 	_encoderNameToConstructor = map[string]func(zapcore.EncoderConfig) zapcore.Encoder{
-		"console": func(encoderConfig zapcore.EncoderConfig) zapcore.Encoder {
+		TextFormat: func(encoderConfig zapcore.EncoderConfig) zapcore.Encoder {
 			return zapcore.NewConsoleEncoder(encoderConfig)
 		},
-		"json": func(encoderConfig zapcore.EncoderConfig) zapcore.Encoder {
+		JsonFormat: func(encoderConfig zapcore.EncoderConfig) zapcore.Encoder {
 			return zapcore.NewJSONEncoder(encoderConfig)
 		},
 	}
@@ -47,7 +54,7 @@ var (
 
 type LogOptions struct {
 	// Encoding sets the logger's encoding. Valid values are "json" and
-	// "console", as well as any third-party encodings registered via
+	// "text", as well as any third-party encodings registered via
 	// RegisterEncoder.
 	Encoding      string   `json:"encoding" yaml:"encoding" toml:"encoding"`
 	InfoFilename  string   `json:"info_filename" yaml:"info_filename" toml:"info_filename"`
@@ -83,15 +90,19 @@ func New() *LogOptions {
 	}
 }
 
-// Log get a default SugaredLogger
-func Log() *zap.SugaredLogger {
+// Logger get a default SlgaredLogger
+func Logger() *zap.SugaredLogger {
+	if logFilled.Load() {
+		// return an initialized logger
+		return SugaredLogger
+	}
 	log := New()
 	log.InitLogger()
 	return SugaredLogger
 }
 
-// NewLog new a SugaredLogger by logFile, logLevel, format
-func NewLog(logFile, logLevel, format string) *zap.SugaredLogger {
+// InitLogger new a SugaredLogger by logFile, logLevel, format
+func InitLogger(logFile, logLevel, format string) *zap.SugaredLogger {
 	log := New()
 	log.SetInfoFile(logFile)
 	log.SetLogLevel(logLevel)
@@ -175,29 +186,12 @@ func (c *LogOptions) InitLogger() (*zap.Logger, *zap.SugaredLogger) {
 		logger = zap.New(core, development)
 	}
 
-	Logger = logger
-	SugaredLogger = Logger.Sugar()
-	return Logger, SugaredLogger
-}
+	Log = logger
+	SugaredLogger = Log.Sugar()
 
-func (c *LogOptions) SetDivision(division string) {
-	c.Division = division
-}
-
-func (c *LogOptions) CloseConsoleDisplay() {
-	c.consoleDisplay = false
-}
-
-func (c *LogOptions) defaultDisplay() {
-	c.consoleDisplay = true
-}
-
-func (c *LogOptions) SetCaller(b bool) {
-	c.caller = b
-}
-
-func (c *LogOptions) SetTimeUnit(t TimeUnit) {
-	c.TimeUnit = t
+	// mark as already initialized
+	logFilled.Store(true)
+	return Log, SugaredLogger
 }
 
 func (c *LogOptions) SetErrorFile(path string) {
@@ -215,6 +209,22 @@ func (c *LogOptions) SetEncoding(encoding string) {
 
 func (c *LogOptions) SetLogLevel(level string) {
 	c.LogLevel = level
+}
+
+func (c *LogOptions) SetDivision(division string) {
+	c.Division = division
+}
+
+func (c *LogOptions) SetConsoleDisplay(flag bool) {
+	c.consoleDisplay = flag
+}
+
+func (c *LogOptions) SetCaller(flag bool) {
+	c.caller = flag
+}
+
+func (c *LogOptions) SetTimeUnit(t TimeUnit) {
+	c.TimeUnit = t
 }
 
 // isOutput whether set output file
@@ -256,59 +266,6 @@ func (c *LogOptions) timeDivisionWriter(filename string) io.Writer {
 		panic(err)
 	}
 	return hook
-}
-
-func Info(msg string, args ...zap.Field) {
-	Logger.Info(msg, args...)
-}
-
-func Error(msg string, args ...zap.Field) {
-	Logger.Error(msg, args...)
-}
-
-func Warn(msg string, args ...zap.Field) {
-	Logger.Warn(msg, args...)
-}
-
-func Debug(msg string, args ...zap.Field) {
-	Logger.Debug(msg, args...)
-}
-
-func Fatal(msg string, args ...zap.Field) {
-	Logger.Fatal(msg, args...)
-}
-
-func Infof(format string, args ...interface{}) {
-	logMsg := fmt.Sprintf(format, args...)
-	Logger.Info(logMsg)
-}
-
-func Errorf(format string, args ...interface{}) {
-	logMsg := fmt.Sprintf(format, args...)
-	Logger.Error(logMsg)
-}
-
-func Warnf(format string, args ...interface{}) {
-	logMsg := fmt.Sprintf(format, args...)
-	Logger.Warn(logMsg)
-}
-
-func Debugf(format string, args ...interface{}) {
-	logMsg := fmt.Sprintf(format, args...)
-	Logger.Debug(logMsg)
-}
-
-func Fatalf(format string, args ...interface{}) {
-	logMsg := fmt.Sprintf(format, args...)
-	Logger.Fatal(logMsg)
-}
-
-func With(k string, v interface{}) zap.Field {
-	return zap.Any(k, v)
-}
-
-func WithError(err error) zap.Field {
-	return zap.NamedError("error", err)
 }
 
 func infoLevel() zap.LevelEnablerFunc {

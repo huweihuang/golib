@@ -1,0 +1,4 @@
+{"level":"error","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:62","msg":"error level test"}
+{"level":"warn","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:63","msg":"warn level test"}
+{"level":"error","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:67","msg":"error level test: 111"}
+{"level":"warn","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:68","msg":"warn level test: 111"}

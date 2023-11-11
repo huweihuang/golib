@@ -1,0 +1,9 @@
+{"level":"info","time":"2023-11-11T16:26:01.840+0800","caller":"zap/zap_test.go:61","msg":"info level test"}
+{"level":"debug","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:64","msg":"debug level test"}
+{"level":"info","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:66","msg":"info level test: 111"}
+{"level":"debug","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:69","msg":"debug level test: 111"}
+{"level":"info","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:71","msg":"test with field","with_field":{"test1":"value1","test2":"value2"}}
+{"level":"info","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:73","msg":"failed to fetch URL","url":"example.com","attempt":3,"backoff":1}
+{"level":"info","time":"2023-11-11T16:26:01.841+0800","caller":"zap/zap_test.go:80","msg":"failed to fetch URL","url":"example.com","attempt":3,"backoff":1}
+{"level":"info","time":"2023-11-11T16:26:01.841+0800","caller":"zap/format.go:18","msg":"this is a log","Trace":"12345677"}
+{"level":"info","time":"2023-11-11T16:26:01.841+0800","caller":"zap/format.go:18","msg":"this is a log","error":"this is a new error"}

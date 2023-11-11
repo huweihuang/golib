@@ -1,0 +1,12 @@
+time=2023-11-11 16:38:06 level=debug msg=test debugf, debugf func=TestLogrus file=logrus_test.go:16
+time=2023-11-11 16:38:06 level=info msg=test infof, infof func=TestLogrus file=logrus_test.go:17
+time=2023-11-11 16:38:06 level=warning msg=test warnf, warnf func=TestLogrus file=logrus_test.go:18
+time=2023-11-11 16:38:06 level=error msg=test errorf, errorf func=TestLogrus file=logrus_test.go:19
+time=2023-11-11 16:38:06 level=debug msg=test field, debug func=TestLogrus file=logrus_test.go:22 field1=debug
+time=2023-11-11 16:38:06 level=info msg=test field, info func=TestLogrus file=logrus_test.go:23 field1=info
+time=2023-11-11 16:38:06 level=warning msg=test field, warn func=TestLogrus file=logrus_test.go:24 field1=warn
+time=2023-11-11 16:38:06 level=error msg=test field, error func=TestLogrus file=logrus_test.go:25 field1=error
+time=2023-11-11 16:38:06 level=debug msg=test fields, debug func=TestLogrus file=logrus_test.go:31 fields1=fields1_value fields2=fields2_value
+time=2023-11-11 16:38:06 level=info msg=test fields, info func=TestLogrus file=logrus_test.go:36 fields1=fields1_value fields2=fields2_value
+time=2023-11-11 16:38:06 level=warning msg=test fields, warn func=TestLogrus file=logrus_test.go:41 fields1=fields1_value fields2=fields2_value
+time=2023-11-11 16:38:06 level=error msg=test fields, error func=TestLogrus file=logrus_test.go:46 fields1=fields1_value fields2=fields2_value

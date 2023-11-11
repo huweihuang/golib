@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/huweihuang/golib/logger/logrus"
+	log "github.com/huweihuang/golib/logger/zap"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 
 	"github.com/huweihuang/golib/gin/types"
@@ -18,7 +18,7 @@ func SucceedWrapper(c *gin.Context, msg string, data interface{}) {
 		Message: fmt.Sprintf("%s succeed", msg),
 		Data:    data,
 	}
-	log.Log().WithField("resp", resp).Info(msg)
+	log.Logger().With("resp", resp).Info(msg)
 	c.JSON(http.StatusOK, resp)
 }
 
@@ -29,7 +29,7 @@ func ErrorWrapper(c *gin.Context, msg string, err error) {
 		Message: fmt.Sprintf("%s failed", msg),
 		Data:    map[string]interface{}{"error": err.Error()},
 	}
-	log.Log().WithField("resp", resp).Error(msg)
+	log.Logger().With("resp", resp).Error(msg)
 	c.AbortWithStatusJSON(http.StatusInternalServerError, resp)
 }
 
@@ -40,7 +40,7 @@ func NotFoundWrapper(c *gin.Context, msg string, data interface{}) {
 		Message: fmt.Sprintf("%s not found", msg),
 		Data:    data,
 	}
-	log.Log().WithField("resp", resp).Error(msg)
+	log.Logger().With("resp", resp).Error(msg)
 	c.AbortWithStatusJSON(http.StatusNotFound, resp)
 }
 
@@ -51,7 +51,7 @@ func BadRequestWrapper(c *gin.Context, err error) {
 		Message: "invalid request",
 		Data:    map[string]interface{}{"error": err.Error()},
 	}
-	log.Log().WithField("resp", resp).Error("invalid request")
+	log.Logger().With("resp", resp).Error("invalid request")
 	c.AbortWithStatusJSON(http.StatusBadRequest, resp)
 }
 
@@ -62,18 +62,20 @@ func ValidateBadRequestWrapper(c *gin.Context, errs field.ErrorList) {
 		Message: "invalid request",
 		Data:    map[string]interface{}{"error": errs},
 	}
-	log.Log().WithField("resp", resp).Error("invalid request")
+	log.Logger().With("resp", resp).Error("invalid request")
 	c.AbortWithStatusJSON(http.StatusBadRequest, resp)
 }
 
-func ParseRequest(c *gin.Context, request interface{}) {
+func ParseRequest(c *gin.Context, request interface{}) error {
 	if err := c.BindJSON(request); err != nil {
 		resp := types.Response{
 			Code:    http.StatusBadRequest,
 			Message: "invalid request body",
 			Data:    map[string]interface{}{"error": err},
 		}
-		log.Log().WithField("err", err).Warn("invalid request body")
+		log.Logger().With("err", err).Warn("invalid request body")
 		c.AbortWithStatusJSON(http.StatusBadRequest, resp)
+		return err
 	}
+	return nil
 }
