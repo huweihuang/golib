@@ -9,10 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/huweihuang/golib/utils"
-
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
+	"go.uber.org/atomic"
+
+	"github.com/huweihuang/golib/utils"
 )
 
 const (
@@ -23,7 +24,8 @@ const (
 )
 
 var (
-	Logger *logrus.Logger
+	logFilled atomic.Bool
+	Log       *logrus.Logger
 
 	callerPrettyfier = func(f *runtime.Frame) (string, string) {
 		s := strings.Split(f.Function, ".")
@@ -81,7 +83,9 @@ func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logru
 		})
 	}
 
-	Logger = logger
+	Log = logger
+	// mark as already initialized
+	logFilled.Store(true)
 	return logger
 }
 
@@ -108,7 +112,10 @@ func InitDefaultLogger() *logrus.Logger {
 	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, defaultEnableForceColors)
 }
 
-// Log get a default Logger
-func Log() *logrus.Logger {
+// Logger get a default Log
+func Logger() *logrus.Logger {
+	if logFilled.Load() {
+		return Log
+	}
 	return InitDefaultLogger()
 }

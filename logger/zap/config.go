@@ -14,7 +14,7 @@ func NewFromToml(confPath string) *LogOptions {
 	if _, err := toml.DecodeFile(confPath, &c); err != nil {
 		panic(err)
 	}
-	c.defaultDisplay()
+	c.SetConsoleDisplay(true)
 	c.SetCaller(true)
 	return c
 }
@@ -29,7 +29,7 @@ func NewFromYaml(confPath string) *LogOptions {
 	if err != nil {
 		fmt.Printf("error: %v", err)
 	}
-	c.defaultDisplay()
+	c.SetConsoleDisplay(true)
 	c.SetCaller(true)
 	return c
 }
@@ -44,7 +44,7 @@ func NewFromJson(confPath string) *LogOptions {
 	if err != nil {
 		fmt.Printf("error: %v", err)
 	}
-	c.defaultDisplay()
+	c.SetConsoleDisplay(true)
 	c.SetCaller(true)
 	return c
 }

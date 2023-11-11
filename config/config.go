@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	log "github.com/sirupsen/logrus"
+	log "github.com/huweihuang/golib/logger/zap"
 	"github.com/spf13/viper"
 )
 
@@ -65,7 +65,7 @@ func InitConfigObjectByPath(configPath string, configObject interface{}) error {
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal, err: %v", err)
 		}
-		log.WithField("config", configObject).Debug("init config")
+		log.Logger().With("config", configObject).Debug("init config")
 	}
 	return nil
 }

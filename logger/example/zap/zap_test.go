@@ -9,7 +9,33 @@ import (
 	"go.uber.org/zap"
 )
 
-func TestZap(t *testing.T) {
+func TestMainZap(t *testing.T) {
+	t.Run("TestGetInstance", TestLogger)
+	t.Run("TestCreateInstance", TestInitLogger)
+	t.Run("TestGetInstance", TestZapLogByConfig)
+}
+
+func TestLogger(t *testing.T) {
+	log.InitLogger("./log/zap.log", "debug", "json")
+
+	log.Logger().Infof("test default log")
+	log.Logger().Infow("failed to fetch URL",
+		// Structured context as loosely typed key-value pairs.
+		"url", "example.com",
+		"attempt", 3,
+		"backoff", time.Second)
+
+	log.Logger().Error("test error log")
+	log.Logger().Errorw("failed to fetch URL",
+		// Structured context as loosely typed key-value pairs.
+		"url", "example.com",
+		"attempt", 3,
+		"backoff", time.Second)
+
+	log.Logger().With("with_field", map[string]string{"test1": "value1", "test2": "value2"}).Info("test with field")
+}
+
+func TestInitLogger(t *testing.T) {
 	c := log.New()
 	c.SetDivision("size")  // 设置归档方式，"time"时间归档 "size" 文件大小归档，文件大小等可以在配置文件配置
 	c.SetTimeUnit(log.Day) // 时间归档 可以设置切割单位
@@ -20,33 +46,17 @@ func TestZap(t *testing.T) {
 	c.SetLogLevel("debug")
 	c.InitLogger()
 
-	PrintLog()
+	printLog()
 }
 
 func TestZapLogByConfig(t *testing.T) {
 	c := log.NewFromYaml("config.yaml")
 	c.InitLogger()
 
-	PrintLog()
+	printLog()
 }
 
-func TestLog(t *testing.T) {
-	log.Log().Infof("test default log")
-	log.Log().Infow("failed to fetch URL",
-		// Structured context as loosely typed key-value pairs.
-		"url", "example.com",
-		"attempt", 3,
-		"backoff", time.Second)
-
-	log.Log().Error("test error log")
-	log.Log().Errorw("failed to fetch URL",
-		// Structured context as loosely typed key-value pairs.
-		"url", "example.com",
-		"attempt", 3,
-		"backoff", time.Second)
-}
-
-func PrintLog() {
+func printLog() {
 	// SugaredLogger
 	log.SugaredLogger.Info("info level test")
 	log.SugaredLogger.Error("error level test")
@@ -58,6 +68,8 @@ func PrintLog() {
 	log.SugaredLogger.Warnf("warn level test: %s", "111")
 	log.SugaredLogger.Debugf("debug level test: %s", "111")
 
+	log.SugaredLogger.With("with_field", map[string]string{"test1": "value1", "test2": "value2"}).Info("test with field")
+
 	log.SugaredLogger.Infow("failed to fetch URL",
 		// Structured context as loosely typed key-value pairs.
 		"url", "example.com",
@@ -65,7 +77,7 @@ func PrintLog() {
 		"backoff", time.Second)
 
 	// Logger
-	log.Logger.Info("failed to fetch URL",
+	log.Log.Info("failed to fetch URL",
 		// Structured context as strongly typed Field values.
 		zap.String("url", "example.com"),
 		zap.Int("attempt", 3),

@@ -7,14 +7,13 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	log "github.com/huweihuang/golib/logger/logrus"
-	"github.com/sirupsen/logrus"
+	log "github.com/huweihuang/golib/logger/zap"
 )
 
 func CallURL(method, url, path string, header map[string]string, request interface{}, response interface{}) (
 	statusCode int, body []byte, err error) {
 
-	log.Log().WithFields(logrus.Fields{
+	log.Logger().With(map[string]interface{}{
 		"method":  method,
 		"url":     url,
 		"path":    path,
