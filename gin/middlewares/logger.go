@@ -11,10 +11,10 @@ import (
 )
 
 func Logger() gin.HandlerFunc {
-	return ZapMiddleware(log.Logger())
+	return ZapMiddleware(log.Log())
 }
 
-func ZapMiddleware(logger *zap.SugaredLogger) gin.HandlerFunc {
+func ZapMiddleware(logger *zap.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Start timer
 		start := time.Now()
@@ -38,11 +38,11 @@ func ZapMiddleware(logger *zap.SugaredLogger) gin.HandlerFunc {
 		}
 
 		if statusCode >= 500 {
-			logger.With(httpFields).Error()
+			logger.With(httpFields...).Error("http fields")
 		} else if statusCode >= 400 {
-			logger.With(httpFields).Warn()
+			logger.With(httpFields...).Warn("http fields")
 		} else {
-			logger.With(httpFields).Info()
+			logger.With(httpFields...).Info("http fields")
 		}
 	}
 }
@@ -67,6 +67,7 @@ func LogrusMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 			"method":      c.Request.Method,
 			"status_code": statusCode,
 			"req_id":      c.GetString("req_id"),
+			"user-agent":  c.Request.UserAgent(),
 		}
 
 		if statusCode >= 500 {

@@ -77,7 +77,7 @@ func printLog() {
 		"backoff", time.Second)
 
 	// Logger
-	log.Log.Info("failed to fetch URL",
+	log.L.Info("failed to fetch URL",
 		// Structured context as strongly typed Field values.
 		zap.String("url", "example.com"),
 		zap.Int("attempt", 3),
