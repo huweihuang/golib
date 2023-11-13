@@ -19,11 +19,11 @@ func ZapMiddleware(logger *zap.SugaredLogger) gin.HandlerFunc {
 		httpFields, statusCode := GetHttpFields(c)
 
 		if statusCode >= 500 {
-			logger.With(httpFields).Error()
+			logger.With("httpFields", httpFields).Error()
 		} else if statusCode >= 400 {
-			logger.With(httpFields).Warn()
+			logger.With("httpFields", httpFields).Warn()
 		} else {
-			logger.With(httpFields).Info()
+			logger.With("httpFields", httpFields).Info()
 		}
 	}
 }

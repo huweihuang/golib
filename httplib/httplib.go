@@ -13,13 +13,13 @@ import (
 func CallURL(method, url, path string, header map[string]string, request interface{}, response interface{}) (
 	statusCode int, body []byte, err error) {
 
-	log.Logger().With(map[string]interface{}{
-		"method":  method,
-		"url":     url,
-		"path":    path,
-		"header":  header,
-		"request": request,
-	}).Debug("request url info")
+	log.Logger().With(
+		"method", method,
+		"url", url,
+		"path", path,
+		"header", header,
+		"request", request,
+	).Debug("request url info")
 
 	params, err := encodeData(request)
 	if err != nil {
