@@ -18,46 +18,46 @@ func WithError(err error) zap.Field {
 }
 
 func Info(msg string, args ...zap.Field) {
-	Log.Info(msg, args...)
+	L.Info(msg, args...)
 }
 
 func Error(msg string, args ...zap.Field) {
-	Log.Error(msg, args...)
+	L.Error(msg, args...)
 }
 
 func Warn(msg string, args ...zap.Field) {
-	Log.Warn(msg, args...)
+	L.Warn(msg, args...)
 }
 
 func Debug(msg string, args ...zap.Field) {
-	Log.Debug(msg, args...)
+	L.Debug(msg, args...)
 }
 
 func Fatal(msg string, args ...zap.Field) {
-	Log.Fatal(msg, args...)
+	L.Fatal(msg, args...)
 }
 
 func Infof(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Log.Info(logMsg)
+	L.Info(logMsg)
 }
 
 func Errorf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Log.Error(logMsg)
+	L.Error(logMsg)
 }
 
 func Warnf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Log.Warn(logMsg)
+	L.Warn(logMsg)
 }
 
 func Debugf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Log.Debug(logMsg)
+	L.Debug(logMsg)
 }
 
 func Fatalf(format string, args ...interface{}) {
 	logMsg := fmt.Sprintf(format, args...)
-	Log.Fatal(logMsg)
+	L.Fatal(logMsg)
 }

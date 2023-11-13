@@ -40,7 +40,7 @@ var (
 	logFilled atomic.Bool
 
 	SugaredLogger *zap.SugaredLogger
-	Log           *zap.Logger
+	L             *zap.Logger
 
 	_encoderNameToConstructor = map[string]func(zapcore.EncoderConfig) zapcore.Encoder{
 		TextFormat: func(encoderConfig zapcore.EncoderConfig) zapcore.Encoder {
@@ -90,6 +90,17 @@ func New() *LogOptions {
 	}
 }
 
+// Log get a default L
+func Log() *zap.Logger {
+	if logFilled.Load() {
+		// return an initialized logger
+		return L
+	}
+	log := New()
+	log.InitLogger()
+	return L
+}
+
 // Logger get a default SlgaredLogger
 func Logger() *zap.SugaredLogger {
 	if logFilled.Load() {
@@ -101,14 +112,19 @@ func Logger() *zap.SugaredLogger {
 	return SugaredLogger
 }
 
-// InitLogger new a SugaredLogger by logFile, logLevel, format
-func InitLogger(logFile, logLevel, format string) *zap.SugaredLogger {
+// Sugar is the alias of Logger
+func Sugar() *zap.SugaredLogger {
+	return Logger()
+}
+
+// InitLogger new a Logger and SugaredLogger by logFile, logLevel, format
+func InitLogger(logFile, logLevel, format string) (*zap.Logger, *zap.SugaredLogger) {
 	log := New()
 	log.SetInfoFile(logFile)
 	log.SetLogLevel(logLevel)
 	log.SetEncoding(format)
 	log.InitLogger()
-	return SugaredLogger
+	return L, SugaredLogger
 }
 
 func (c *LogOptions) InitLogger() (*zap.Logger, *zap.SugaredLogger) {
@@ -186,12 +202,12 @@ func (c *LogOptions) InitLogger() (*zap.Logger, *zap.SugaredLogger) {
 		logger = zap.New(core, development)
 	}
 
-	Log = logger
-	SugaredLogger = Log.Sugar()
+	L = logger
+	SugaredLogger = L.Sugar()
 
 	// mark as already initialized
 	logFilled.Store(true)
-	return Log, SugaredLogger
+	return L, SugaredLogger
 }
 
 func (c *LogOptions) SetErrorFile(path string) {

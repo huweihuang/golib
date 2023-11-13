@@ -28,7 +28,7 @@ type LogConfig struct {
 func InitLogger(c *LogConfig, loggerType string) (*zap.SugaredLogger, *logrus.Logger) {
 	switch loggerType {
 	case ZapType:
-		ZapLogger = zap2.InitLogger(c.LogFile, c.LogLevel, c.LogFormat)
+		_, ZapLogger = zap2.InitLogger(c.LogFile, c.LogLevel, c.LogFormat)
 	case LogrusType:
 		LogrusLogger = logrus2.InitLogger(c.LogFile, c.LogLevel, c.LogFormat, c.EnableForceColors)
 	}
