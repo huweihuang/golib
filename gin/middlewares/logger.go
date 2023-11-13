@@ -16,21 +16,58 @@ func Logger() gin.HandlerFunc {
 
 func ZapMiddleware(logger *zap.SugaredLogger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		httpFields, statusCode := GetHttpFields(c)
+		// Start timer
+		start := time.Now()
+		// Process request
+		c.Next()
+		// Stop timer
+		end := time.Now()
+		latency := end.Sub(start)
+
+		statusCode := c.Writer.Status()
+
+		httpFields := []zap.Field{
+			zap.Int("status", c.Writer.Status()),
+			zap.String("method", c.Request.Method),
+			zap.String("path", c.Request.URL.Path),
+			zap.String("query", c.Request.URL.RawQuery),
+			zap.String("ip", c.ClientIP()),
+			zap.Int("latency", formatLatency(latency)),
+			zap.String("req_id", c.GetString("req_id")),
+			zap.String("user-agent", c.Request.UserAgent()),
+		}
 
 		if statusCode >= 500 {
-			logger.With("httpFields", httpFields).Error()
+			logger.With(httpFields).Error()
 		} else if statusCode >= 400 {
-			logger.With("httpFields", httpFields).Warn()
+			logger.With(httpFields).Warn()
 		} else {
-			logger.With("httpFields", httpFields).Info()
+			logger.With(httpFields).Info()
 		}
 	}
 }
 
 func LogrusMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		httpFields, statusCode := GetHttpFields(c)
+		// Start timer
+		start := time.Now()
+		// Process request
+		c.Next()
+		// Stop timer
+		end := time.Now()
+		latency := end.Sub(start)
+
+		statusCode := c.Writer.Status()
+
+		httpFields := logrus.Fields{
+			"path":        c.Request.URL.Path,
+			"query":       c.Request.URL.RawQuery,
+			"latency":     formatLatency(latency),
+			"ip":          c.ClientIP(),
+			"method":      c.Request.Method,
+			"status_code": statusCode,
+			"req_id":      c.GetString("req_id"),
+		}
 
 		if statusCode >= 500 {
 			logger.WithFields(httpFields).Error()
@@ -40,30 +77,6 @@ func LogrusMiddleware(logger *logrus.Logger) gin.HandlerFunc {
 			logger.WithFields(httpFields).Info()
 		}
 	}
-}
-
-func GetHttpFields(c *gin.Context) (httpFields map[string]interface{}, status int) {
-	// Start timer
-	start := time.Now()
-	// Process request
-	c.Next()
-	// Stop timer
-	end := time.Now()
-	latency := end.Sub(start)
-
-	statusCode := c.Writer.Status()
-
-	httpFields = map[string]interface{}{
-		"path":        c.Request.URL.Path,
-		"query":       c.Request.URL.RawQuery,
-		"latency":     formatLatency(latency),
-		"ip":          c.ClientIP(),
-		"method":      c.Request.Method,
-		"status_code": statusCode,
-		"req_id":      c.GetString("req_id"),
-	}
-
-	return httpFields, statusCode
 }
 
 // formatLatency convert to milliseconds
