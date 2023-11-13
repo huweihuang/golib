@@ -71,9 +71,9 @@ func ParseRequest(c *gin.Context, request interface{}) error {
 		resp := types.Response{
 			Code:    http.StatusBadRequest,
 			Message: "invalid request body",
-			Data:    map[string]interface{}{"error": err},
+			Data:    map[string]interface{}{"error": err.Error()},
 		}
-		log.Logger().With("err", err).Warn("invalid request body")
+		log.Logger().With("resp", resp).Error("invalid request body")
 		c.AbortWithStatusJSON(http.StatusBadRequest, resp)
 		return err
 	}

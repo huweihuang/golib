@@ -6,6 +6,9 @@ import (
 	"go.uber.org/zap"
 )
 
+// Fields type, used to pass to `With`.
+type Fields map[string]interface{}
+
 func With(k string, v interface{}) zap.Field {
 	return zap.Any(k, v)
 }
