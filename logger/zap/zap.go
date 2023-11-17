@@ -27,7 +27,7 @@ const (
 	defaultLogLevel      = "info"
 	defaultEncoding      = "json"
 
-	defaultDivision = SizeDivision
+	defaultDivision = TimeDivision
 	defaultUnit     = Day
 
 	// lumberjack
