@@ -17,10 +17,10 @@ import (
 )
 
 const (
-	defaultLevel             = "info"
-	defaultLogFile           = "log/info.log"
-	defaultFormat            = "json"
-	defaultEnableForceColors = true
+	defaultLevel       = "info"
+	defaultLogFile     = "log/info.log"
+	defaultFormat      = "json"
+	defaultEnableColor = true
 )
 
 var (
@@ -35,7 +35,7 @@ var (
 	}
 )
 
-func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logrus.Logger {
+func InitLogger(logFile, logLevel, format string, enableColor bool) *logrus.Logger {
 	logger := logrus.New()
 
 	// set log level
@@ -62,7 +62,7 @@ func InitLogger(logFile, logLevel, format string, enableForceColors bool) *logru
 	}
 
 	forceColors := false
-	if enableForceColors {
+	if enableColor {
 		forceColors = true
 	}
 	// set file && line number
@@ -109,7 +109,7 @@ func timeDivisionWriter(logFile string) io.Writer {
 }
 
 func InitDefaultLogger() *logrus.Logger {
-	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, defaultEnableForceColors)
+	return InitLogger(defaultLogFile, defaultLevel, defaultFormat, defaultEnableColor)
 }
 
 // Logger get a default Log

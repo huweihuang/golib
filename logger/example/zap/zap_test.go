@@ -16,7 +16,7 @@ func TestMainZap(t *testing.T) {
 }
 
 func TestLogger(t *testing.T) {
-	log.InitLogger("./log/zap.log", "debug", "json")
+	log.InitLogger("", "", "debug", "text", true)
 
 	log.Logger().Infof("test default log")
 	log.Logger().Infow("failed to fetch URL",
@@ -33,6 +33,7 @@ func TestLogger(t *testing.T) {
 		"backoff", time.Second)
 
 	log.Logger().With("with_field", map[string]string{"test1": "value1", "test2": "value2"}).Info("test with field")
+	log.Logger().With("field1", "value1", "field2", "value2", "field3", "value3").Error("test multi field")
 }
 
 func TestInitLogger(t *testing.T) {

@@ -67,26 +67,28 @@ type LogOptions struct {
 	LevelSeparate bool     `json:"level_separate" yaml:"level_separate" toml:"level_separate"`
 	TimeUnit      TimeUnit `json:"time_unit" yaml:"time_unit" toml:"time_unit"`
 	LogLevel      string   `json:"log_level" yaml:"log_level" toml:"log_level"`
+	EnableColor   bool     `json:"enable_color" yaml:"enable_color" toml:"enable_color"`
 
-	consoleDisplay bool
-	caller         bool
+	consoleOutput bool
+	caller        bool
 }
 
 func New() *LogOptions {
 	return &LogOptions{
-		Encoding:       defaultEncoding,
-		InfoFilename:   defaultInfoFilename,
-		ErrorFilename:  defaultErrorFilename,
-		Division:       defaultDivision,
-		LevelSeparate:  false,
-		LogLevel:       defaultLogLevel,
-		TimeUnit:       defaultUnit,
-		MaxSize:        defaultMaxSize, //MB
-		MaxBackups:     defaultMaxBackups,
-		MaxAge:         defaultMaxAge, //days
-		Compress:       true,
-		caller:         true,
-		consoleDisplay: true,
+		Encoding:      defaultEncoding,
+		InfoFilename:  "",
+		ErrorFilename: "",
+		Division:      defaultDivision,
+		LevelSeparate: false,
+		LogLevel:      defaultLogLevel,
+		TimeUnit:      defaultUnit,
+		MaxSize:       defaultMaxSize, //MB
+		MaxBackups:    defaultMaxBackups,
+		MaxAge:        defaultMaxAge, //days
+		Compress:      true,
+		caller:        true,
+		consoleOutput: true,
+		EnableColor:   false,
 	}
 }
 
@@ -118,11 +120,13 @@ func Sugar() *zap.SugaredLogger {
 }
 
 // InitLogger new a Logger and SugaredLogger by logFile, logLevel, format
-func InitLogger(logFile, logLevel, format string) (*zap.Logger, *zap.SugaredLogger) {
+func InitLogger(logFile, errFile, logLevel, format string, enableColor bool) (*zap.Logger, *zap.SugaredLogger) {
 	log := New()
 	log.SetInfoFile(logFile)
+	log.SetErrorFile(errFile)
 	log.SetLogLevel(logLevel)
 	log.SetEncoding(format)
+	log.SetColor(enableColor)
 	log.InitLogger()
 	return L, SugaredLogger
 }
@@ -154,13 +158,17 @@ func (c *LogOptions) InitLogger() (*zap.Logger, *zap.SugaredLogger) {
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
 
-	if c.consoleDisplay {
+	if c.EnableColor {
+		encoderConfig.EncodeLevel = zapcore.LowercaseColorLevelEncoder
+	}
+
+	if c.consoleOutput {
 		wsInfo = append(wsInfo, zapcore.AddSync(os.Stdout))
 		wsWarn = append(wsWarn, zapcore.AddSync(os.Stdout))
 	}
 
 	// zapcore WriteSyncer setting
-	if c.isOutput() {
+	if c.InfoFilename != "" {
 		switch c.Division {
 		case TimeDivision:
 			infoHook = c.timeDivisionWriter(c.InfoFilename)
@@ -231,21 +239,20 @@ func (c *LogOptions) SetDivision(division string) {
 	c.Division = division
 }
 
+func (c *LogOptions) SetTimeUnit(t TimeUnit) {
+	c.TimeUnit = t
+}
+
 func (c *LogOptions) SetConsoleDisplay(flag bool) {
-	c.consoleDisplay = flag
+	c.consoleOutput = flag
 }
 
 func (c *LogOptions) SetCaller(flag bool) {
 	c.caller = flag
 }
 
-func (c *LogOptions) SetTimeUnit(t TimeUnit) {
-	c.TimeUnit = t
-}
-
-// isOutput whether set output file
-func (c *LogOptions) isOutput() bool {
-	return c.InfoFilename != ""
+func (c *LogOptions) SetColor(flag bool) {
+	c.EnableColor = flag
 }
 
 func (c *LogOptions) sizeDivisionWriter(filename string) io.Writer {
