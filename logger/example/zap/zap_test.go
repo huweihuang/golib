@@ -16,7 +16,7 @@ func TestMainZap(t *testing.T) {
 }
 
 func TestLogger(t *testing.T) {
-	log.InitLogger("", "", "debug", "text", true)
+	log.InitLogger("log/info.log", "error.log", "debug", "text", true)
 
 	log.Logger().Infof("test default log")
 	log.Logger().Infow("failed to fetch URL",
