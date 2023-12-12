@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz0123456789"
@@ -44,4 +45,9 @@ func MakeParentDir(fullFilePath string) error {
 		return err
 	}
 	return nil
+}
+
+func FormatTime(t time.Time) string {
+	local, _ := time.LoadLocation("Asia/Shanghai")
+	return t.In(local).Format("2006-01-02 15:04:05")
 }
