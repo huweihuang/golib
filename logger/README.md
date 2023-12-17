@@ -4,8 +4,6 @@
 
 - [logrus](logrus): https://github.com/sirupsen/logrus
 - [zap](zap): https://github.com/uber-go/zap
-- [glog](glog): https://github.com/golang/glog
-- [klog](): https://github.com/kubernetes/klog
 
 # 日志包的基本功能
 
