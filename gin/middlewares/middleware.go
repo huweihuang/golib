@@ -18,7 +18,6 @@ func SucceedWrapper(c *gin.Context, msg string, data interface{}) {
 		Message: fmt.Sprintf("%s succeed", msg),
 		Data:    data,
 	}
-	log.Logger().With("resp", resp).Info(msg)
 	c.JSON(http.StatusOK, resp)
 }
 
