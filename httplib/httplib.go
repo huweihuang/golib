@@ -10,7 +10,7 @@ import (
 	log "github.com/huweihuang/golib/logger/zap"
 )
 
-func CallURL(method, url, path string, header map[string]string, request interface{}, response interface{}) (
+func RequestURL(method, url, path string, header map[string]string, request interface{}, response interface{}) (
 	statusCode int, body []byte, err error) {
 
 	log.Logger().With(
